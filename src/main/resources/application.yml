@@ -1,0 +1,54 @@
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5432/chat
+    username: postgres
+    password: 122003
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
+    show-sql: false
+    properties:
+      hibernate:
+        format_sql: true
+    database: postgresql
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
+
+  servlet:
+    multipart:
+      max-file-size: 10MB
+      max-request-size: 10MB
+
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: vegakinvietnam@gmail.com
+    password: cyagbmmpvozoocrh # Mật khẩu ứng dụng của Gmail
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+            required: true
+        transport.protocol: smtp
+        debug: true # Tùy chọn: Thêm để theo dõi chi tiết quá trình gửi email
+
+cloudinary:
+  cloud-name: ddp72k7ps
+  api-key: 345256146214767
+  api-secret: dUOhBa3dlz6ftsn6kXDPswOwWNk
+
+logging:
+  level:
+    root: INFO
+    org.springframework.mail: DEBUG
+    org.springframework.web: DEBUG
+
+application:
+  security:
+    jwt:
+      secret-key: 404E635266556A586E3272357538782F413F4428472B4B6250645367566B5970
+      expiration: 604800000 # 7 days
+      refresh-token:
+        expiration: 604800000 # 7 days
