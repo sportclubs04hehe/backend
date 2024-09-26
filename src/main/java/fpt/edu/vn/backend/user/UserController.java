@@ -32,13 +32,41 @@ public class UserController {
     }
 
     @PostMapping("/upload-image")
-    public ResponseEntity<?> uploadImage(@RequestParam("file") MultipartFile file) throws IOException {
-        if (file.getSize() > 10 * 1024 * 1024) {
-            return ResponseEntity.badRequest().body("File size exceeds the limit of 10MB");
-        }
+    public ResponseEntity<?> uploadImage(@RequestParam("file") MultipartFile file) {
+        try {
+            if (file.getSize() > 10 * 1024 * 1024) {
+                return ResponseEntity.badRequest().body("File size exceeds the limit of 10MB");
+            }
 
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        int userId = ((User) authentication.getPrincipal()).getId();
-        return ResponseEntity.ok(uploadImageFile.uploadImage(file, userId));
+            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+            if (authentication == null) {
+                return ResponseEntity.badRequest().body("Authentication failed");
+            }
+
+            int userId = ((User) authentication.getPrincipal()).getId();
+            return ResponseEntity.ok(uploadImageFile.uploadImage(file, userId));
+        }
+        catch (IOException | RuntimeException e)
+        {
+            return ResponseEntity.badRequest().body("Error uploading image: " + e.getMessage());
+        }
+        catch (Exception e)
+        {
+            return ResponseEntity.badRequest().body("An error occurred: " + e.getMessage());
+        }
     }
+
+    @DeleteMapping("/delete-image/{photoId}")
+    public ResponseEntity<String> deleteImage(@PathVariable int photoId) {
+        try
+        {
+            uploadImageFile.deletePhoto(photoId);
+            return ResponseEntity.ok("Photo deleted successfully");
+        }
+        catch (RuntimeException | IOException e)
+        {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
 }

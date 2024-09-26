@@ -4,12 +4,15 @@ import com.cloudinary.Cloudinary;
 import com.cloudinary.utils.ObjectUtils;
 import fpt.edu.vn.backend.dto.PhotoResponse;
 import fpt.edu.vn.backend.entity.Photo;
+import fpt.edu.vn.backend.entity.User;
 import fpt.edu.vn.backend.repository.PhotoRepository;
 import fpt.edu.vn.backend.repository.UserRepository;
 import fpt.edu.vn.backend.service.UploadImageFile;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -48,11 +51,26 @@ public class UploadFileImageImpl implements UploadImageFile {
                 .build();
 
         photo = photoRepository.save(photo);
+
         return PhotoResponse.builder()
                 .id(photo.getId())
                 .url(photo.getUrl())
                 .isMain(photo.isMain())
                 .build();
+    }
+
+    @Override
+    public void deletePhoto(int photoId) throws IOException {
+        Photo photo = photoRepository.findById(photoId).orElseThrow(() -> new RuntimeException("Photo not found"));
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        int userId = ((User) authentication.getPrincipal()).getId();
+
+        if (photo.getUser().getId() != userId) {
+            throw new RuntimeException("You do not have permission to delete this photo");
+        }
+
+        cloudinary.uploader().destroy(photo.getPublicId(), ObjectUtils.emptyMap());
+        photoRepository.delete(photo);
     }
 
     private File convert(MultipartFile file) throws IOException {
