@@ -41,8 +41,4 @@ public class UserService {
         return userRepository.findAll();
     }
 
-    // Lấy tất cả người dùng và quyền của họ
-    public List<User> getAllUsersWithRoles() {
-        return userRepository.findAllUsersWithRoles();
-    }
 }

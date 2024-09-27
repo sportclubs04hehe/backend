@@ -1,5 +1,6 @@
 package fpt.edu.vn.backend;
 
+import fpt.edu.vn.backend.repository.UserRepository;
 import fpt.edu.vn.backend.service.impl.AuthenticationService;
 import fpt.edu.vn.backend.auth.RegisterRequest;
 import fpt.edu.vn.backend.service.impl.EmailSenderService;
@@ -25,7 +26,8 @@ public class BackendApplication {
 
 	@Bean
 	public CommandLineRunner commandLineRunner(
-			AuthenticationService service
+			AuthenticationService service,
+			UserRepository userRepository
 	) {
 		return args -> {
 			var admin = RegisterRequest.builder()
@@ -38,7 +40,12 @@ public class BackendApplication {
 					.dateOfBirth(LocalDate.of(2003, 1, 30))
 					.role(ADMIN)
 					.build();
-			System.out.println("Admin token: " + service.register(admin).getJwt());
+
+			if (!userRepository.existsByEmail(admin.getEmail())) {
+				System.out.println("Admin token: " + service.register(admin).getJwt());
+			} else {
+				System.out.println("Admin already exists");
+			}
 
 			var manager = RegisterRequest.builder()
 					.firstName("Manager")
@@ -50,8 +57,12 @@ public class BackendApplication {
 					.dateOfBirth(LocalDate.of(2002, 12, 30))
 					.role(MANAGER)
 					.build();
-			System.out.println("Manager token: " + service.register(manager).getJwt());
 
+			if (!userRepository.existsByEmail(manager.getEmail())) {
+				System.out.println("Manager token: " + service.register(manager).getJwt());
+			} else {
+				System.out.println("Manager already exists");
+			}
 		};
 	}
 

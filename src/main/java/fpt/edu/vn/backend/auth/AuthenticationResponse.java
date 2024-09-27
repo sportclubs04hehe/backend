@@ -17,6 +17,8 @@ public class AuthenticationResponse {
     private String firstName;
     @JsonProperty("gender")
     private String gender;
+    @JsonProperty("photoUrl")
+    private String photoUrl;
     @JsonProperty("jwt")
     private String jwt;
     @JsonProperty("refresh_token")
