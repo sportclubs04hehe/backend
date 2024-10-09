@@ -43,15 +43,24 @@ public class UploadFileImageImpl implements UploadImageFile {
         cleanDisk(fileUpload);
         String url = uploadResult.get("url");
 
+        // Fetch the user
+        User user = userRepository.findById(userId).orElseThrow(() -> new RuntimeException("User not found"));
+
+        // Check if the user already has a main image
+        boolean userHasMainPhoto = photoRepository.existsByUserAndIsMainTrue(user);
+
+        // Create a new photo object
         Photo photo = Photo.builder()
                 .url(url)
-                .isMain(false)
+                .isMain(!userHasMainPhoto)  // If user doesn't have a main photo, set this one as main
                 .publicId(publicValue)
-                .user(userRepository.findById(userId).orElseThrow(() -> new RuntimeException("User not found")))
+                .user(user)
                 .build();
 
+        // Save the new photo to the repository
         photo = photoRepository.save(photo);
 
+        // Return the PhotoResponse object
         return PhotoResponse.builder()
                 .id(photo.getId())
                 .url(photo.getUrl())

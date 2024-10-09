@@ -3,6 +3,7 @@ package fpt.edu.vn.backend.service.impl;
 import fpt.edu.vn.backend.config.UserMapper;
 import fpt.edu.vn.backend.dto.ChangePasswordRequest;
 import fpt.edu.vn.backend.dto.MemberResponse;
+import fpt.edu.vn.backend.dto.MemberUpdateDto;
 import fpt.edu.vn.backend.entity.User;
 import fpt.edu.vn.backend.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -62,7 +63,7 @@ public class UserService {
             User user = userOptional.get();
             return UserMapper.toMemberResponse(user);
         } else {
-            return null; // or throw an exception, depending on your requirements
+            return null;
         }
     }
 
@@ -86,5 +87,21 @@ public class UserService {
         userRepository.save(user);
     }
 
+    public User updateMember(User user, MemberUpdateDto memberUpdateDto) {
+        user.setIntroduction(memberUpdateDto.getIntroduction());
+        user.setInterests(memberUpdateDto.getInterests());
+        user.setLookingFor(memberUpdateDto.getLookingFor());
+        user.setCity(memberUpdateDto.getCity());
+        user.setCountry(memberUpdateDto.getCountry());
+        return user;
+    }
+
+    public User saveUser (User user) {
+        return userRepository.save(user);
+    }
+
+    public User getUserByEmail(String email) {
+        return userRepository.findUserByEmail(email);
+    }
 
 }

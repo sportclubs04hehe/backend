@@ -1,14 +1,19 @@
 package fpt.edu.vn.backend.controller;
 
+import fpt.edu.vn.backend.config.UserMapper;
 import fpt.edu.vn.backend.dto.ChangePasswordRequest;
 import fpt.edu.vn.backend.dto.MemberResponse;
+import fpt.edu.vn.backend.dto.MemberUpdateDto;
 import fpt.edu.vn.backend.entity.User;
 import fpt.edu.vn.backend.service.UploadImageFile;
 import fpt.edu.vn.backend.service.impl.UserService;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.dao.DataAccessException;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -69,6 +74,36 @@ public class UserController {
         }
     }
 
+    @PutMapping("/update-member")
+    public ResponseEntity<MemberResponse> updateMember(
+            @RequestBody MemberUpdateDto memberUpdateDto,
+            @AuthenticationPrincipal User currentUser) {
+
+        try {
+            // Get the current user by email
+            User user = userService.getUserByEmail(currentUser.getEmail());
+            if (user == null) {
+                return ResponseEntity.notFound().build();
+            }
+
+            // Update and save the user
+            user = userService.updateMember(user, memberUpdateDto);
+            user = userService.saveUser(user);
+
+            var memberResponse = UserMapper.toMemberResponse(user);
+
+            return ResponseEntity.ok(memberResponse);
+        } catch (DataAccessException e) {
+            log.error("Database error updating member", e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        } catch (EntityNotFoundException e) {
+            log.error("Member not found", e);
+            return ResponseEntity.notFound().build();
+        } catch (Exception e) {
+            log.error("Unexpected error updating member", e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
 
     @PatchMapping
     public ResponseEntity<?> changePassword(
