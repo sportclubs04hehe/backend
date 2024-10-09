@@ -1,4 +1,4 @@
-package fpt.edu.vn.backend.auth;
+package fpt.edu.vn.backend.dto;
 
 import fpt.edu.vn.backend.entity.Role;
 import jakarta.validation.constraints.Email;

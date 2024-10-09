@@ -1,4 +1,4 @@
-package fpt.edu.vn.backend.auth;
+package fpt.edu.vn.backend.dto;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;

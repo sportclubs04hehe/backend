@@ -1,5 +1,6 @@
 package fpt.edu.vn.backend.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -22,5 +23,6 @@ public class Photo {
 
     @ManyToOne
     @JoinColumn(name = "user_id")
+    @JsonIgnore // Tránh ánh xạ ngược để tránh vòng lặp vô hạn
     public User user;
 }

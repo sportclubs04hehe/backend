@@ -1,5 +1,8 @@
-package fpt.edu.vn.backend.auth;
+package fpt.edu.vn.backend.controller;
 
+import fpt.edu.vn.backend.dto.AuthenticationRequest;
+import fpt.edu.vn.backend.dto.AuthenticationResponse;
+import fpt.edu.vn.backend.dto.RegisterRequest;
 import fpt.edu.vn.backend.repository.UserRepository;
 import fpt.edu.vn.backend.service.impl.AuthenticationService;
 import jakarta.servlet.http.HttpServletRequest;
@@ -47,12 +50,12 @@ public class AuthenticationController {
         return ResponseEntity.ok(service.authenticate(request));
     }
 
-    @PostMapping("/refresh-token")
-    public ResponseEntity<AuthenticationResponse> refreshToken(
-            HttpServletRequest request,
-            HttpServletResponse response
-    ) throws IOException {
-        return ResponseEntity.ok(service.refreshToken(request));
-    }
+//    @PostMapping("/refresh-token")
+//    public ResponseEntity<AuthenticationResponse> refreshToken(
+//            HttpServletRequest request,
+//            HttpServletResponse response
+//    ) throws IOException {
+//        return ResponseEntity.ok(service.refreshToken(request));
+//    }
 
 }

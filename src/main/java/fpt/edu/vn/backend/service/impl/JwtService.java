@@ -55,7 +55,13 @@ public class JwtService {
     public String generateRefreshToken(
             UserDetails userDetails
     ) {
-        return buildToken(new HashMap<>(), userDetails, refreshExpiration);
+        User user = (User) userDetails;
+        Map<String, Object> extraClaims = new HashMap<>();
+        extraClaims.put("firstName", user.getFirstName());
+        extraClaims.put("email", user.getEmail());
+        extraClaims.put("knowAs", user.getKnowAs());
+        extraClaims.put("gender", user.getGender());
+        return buildToken(extraClaims, userDetails, refreshExpiration);
     }
 
     private String buildToken(

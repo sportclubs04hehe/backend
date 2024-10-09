@@ -1,4 +1,4 @@
-package fpt.edu.vn.backend.auth;
+package fpt.edu.vn.backend.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
