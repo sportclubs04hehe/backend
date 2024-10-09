@@ -8,4 +8,5 @@ import java.io.IOException;
 public interface UploadImageFile {
     PhotoResponse uploadImage(MultipartFile file, int userId) throws IOException;
     void deletePhoto(int photoId) throws IOException;
+    PhotoResponse setMainPhoto(int photoId, int userId);
 }

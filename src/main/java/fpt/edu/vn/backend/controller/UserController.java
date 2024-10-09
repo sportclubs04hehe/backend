@@ -4,6 +4,7 @@ import fpt.edu.vn.backend.config.UserMapper;
 import fpt.edu.vn.backend.dto.ChangePasswordRequest;
 import fpt.edu.vn.backend.dto.MemberResponse;
 import fpt.edu.vn.backend.dto.MemberUpdateDto;
+import fpt.edu.vn.backend.dto.PhotoResponse;
 import fpt.edu.vn.backend.entity.User;
 import fpt.edu.vn.backend.service.UploadImageFile;
 import fpt.edu.vn.backend.service.impl.UserService;
@@ -71,6 +72,26 @@ public class UserController {
         } catch (Exception e) {
             log.error("Error finding user by email: {}", e.getMessage());
             return ResponseEntity.badRequest().build();
+        }
+    }
+
+    @PutMapping("/set-main-photo/{photoId}")
+    public ResponseEntity<PhotoResponse> setMainPhoto(
+            @PathVariable int photoId,
+            @AuthenticationPrincipal User currentUser) {
+
+        try {
+            PhotoResponse updatedPhoto = uploadImageFile.setMainPhoto(photoId, currentUser.getId());
+            return ResponseEntity.ok(updatedPhoto);
+        } catch (EntityNotFoundException e) {
+            log.error("Photo not found", e);
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+        } catch (IllegalStateException e) {
+            log.error("Error setting main photo", e);
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
+        } catch (Exception e) {
+            log.error("Unexpected error", e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
         }
     }
 

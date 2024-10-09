@@ -8,6 +8,7 @@ import fpt.edu.vn.backend.entity.User;
 import fpt.edu.vn.backend.repository.PhotoRepository;
 import fpt.edu.vn.backend.repository.UserRepository;
 import fpt.edu.vn.backend.service.UploadImageFile;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -80,6 +81,41 @@ public class UploadFileImageImpl implements UploadImageFile {
 
         cloudinary.uploader().destroy(photo.getPublicId(), ObjectUtils.emptyMap());
         photoRepository.delete(photo);
+    }
+
+    @Override
+    public PhotoResponse setMainPhoto(int photoId, int userId) {
+        // Find the photo by ID
+        Photo photo = photoRepository.findById(photoId)
+                .orElseThrow(() -> new EntityNotFoundException("Photo not found"));
+
+
+        if (photo.getUser().getId() != userId) {
+            throw new IllegalStateException("You are not authorized to set this photo as your main photo.");
+        }
+
+        // Kiểm tra xem ảnh đã là ảnh chính chưa
+        if (photo.isMain()) {
+            throw new IllegalStateException("This photo is already set as the main photo.");
+        }
+
+        // Tìm ảnh chính hiện tại của người dùng (nếu có) và đặt thành false
+        Photo currentMainPhoto = photoRepository.findByUserAndIsMainTrue(photo.getUser());
+        if (currentMainPhoto != null) {
+            currentMainPhoto.setMain(false);
+            photoRepository.save(currentMainPhoto); // Update the old main photo
+        }
+
+        // Set the new photo as main
+        photo.setMain(true);
+        photoRepository.save(photo);
+
+        // Return the updated PhotoResponse
+        return PhotoResponse.builder()
+                .id(photo.getId())
+                .url(photo.getUrl())
+                .isMain(photo.isMain())
+                .build();
     }
 
     private File convert(MultipartFile file) throws IOException {
